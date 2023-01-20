@@ -4,6 +4,9 @@
 # Compiled class file
 *.class
 
+#file potentially containing sensitive information
+application.properites
+
 # Log file
 *.log
 
