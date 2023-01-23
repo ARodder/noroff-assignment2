@@ -30,20 +30,72 @@ public class CustomerRepository implements CrudRepository<Integer, Customer> {
         this.password = password;
     }
 
+    /**
+     *
+     * @param id Integer corresponding to the customer_id in the customer table
+     *           that one wants to find the corresponding table entry for.
+     * @return Returns a Customer record data object of the retrieved entry
+     *         in the customer table corresponding to the provided customer id
+     *         Can return null if no such table entry is found
+     */
     @Override
     public Customer getById(Integer id) {
-        // TODO Auto-generated method stub
-        return null;
+        Customer customer = null;
+
+        // Initializing SQL statement, using WHERE clause to find specific customer by id
+        // and ?-syntax for creating a parameterized statement where Integer id can be inputted
+        String sql = "SELECT * FROM customer WHERE customer_id = ?";
+
+        // Connection to database
+        try (Connection conn = DriverManager.getConnection(url, username, password)){
+
+            PreparedStatement statement = conn.prepareStatement(sql);
+
+            // We set our predefined variable denoted by ?
+            statement.setInt(1, id);
+
+            ResultSet resultSet = statement.executeQuery();
+
+            // Even though we only expect one returned entry
+            // we loop through in case the query returns null
+            while(resultSet.next()){
+                customer = new Customer(
+                        resultSet.getInt("customer_id"),
+                        resultSet.getString("first_name"),
+                        resultSet.getString("last_name"),
+                        resultSet.getString("country"),
+                        resultSet.getString("postal_code"),
+                        resultSet.getString("phone"),
+                        resultSet.getString("email")
+                );
+            }
+        }catch (SQLException e){
+            e.printStackTrace();
+        }
+        return customer;
     }
 
+    /**
+     * This method retrieves all customers found in the customer table
+     * @return List of all customers formatted as a Customer record data object
+     *         returns List of size 0 if no customers present in customer table
+     */
     @Override
     public List<Customer> getAll() {
         List<Customer> customers = new ArrayList<>();
+
+        // Initializing SQL statement, no WHERE clause present as all customers are to be retrieved
         String sql = "SELECT * FROM customer";
-        try (Connection conn = DriverManager.getConnection(url, username, password)) {
+
+        // Connection to database
+        try(Connection conn = DriverManager.getConnection(url, username, password)){
+
             PreparedStatement statement = conn.prepareStatement(sql);
             ResultSet resultSet = statement.executeQuery();
-            while (resultSet.next()) {
+
+            // Looping through retrieved customers, if any, and building a
+            // record object Customer based on parameters from result
+            while(resultSet.next()){
                 Customer customer = new Customer(
                         resultSet.getInt("customer_id"),
                         resultSet.getString("first_name"),
@@ -60,10 +112,43 @@ public class CustomerRepository implements CrudRepository<Integer, Customer> {
         return customers;
     }
 
+    /**
+     * This method creates a new entry of a customer in the customer table
+     * @param object Customer record data object representing a customer
+     *               that is to be added into the database as a new entry
+     */
     @Override
     public void create(Customer object) {
-        // TODO Auto-generated method stub
 
+        // Initializing the SQL statement. We make use of several '?'
+        // to denote all the values that we will supply the statement with
+        // a prepared statement and setting each value
+        String sql = "INSERT INTO " +
+                "customer(first_name, last_name, country, postal_code, phone, email)" +
+                "VALUES(?, ?, ?, ?, ?, ?)";
+
+        // Connection to database
+        try (Connection conn = DriverManager.getConnection(url, username, password)){
+
+            PreparedStatement statement = conn.prepareStatement(sql);
+
+            // We set each ? in the SQL statement with appropriate values in
+            // the supplied object of type Customer record
+            statement.setString(1, object.firstName());
+            statement.setString(2, object.lastName());
+            statement.setString(3, object.country());
+            statement.setString(4, object.postalCode());
+            statement.setString(5, object.phone());
+            statement.setString(6, object.email());
+
+            // This is a DML statement which does not return any ResultSet
+            // object but instead returns an integer representing how many rows were affected
+            int result = statement.executeUpdate();
+            System.out.println(result);
+
+        } catch (SQLException e){
+            e.printStackTrace();
+        }
     }
 
     @Override
