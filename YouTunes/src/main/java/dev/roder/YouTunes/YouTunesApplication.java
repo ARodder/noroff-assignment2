@@ -7,12 +7,13 @@ import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 
 import dev.roder.YouTunes.access.YouTunesDAO;
+import dev.roder.YouTunes.repositories.CustomerRepository;
 
 @SpringBootApplication
 public class YouTunesApplication implements ApplicationRunner{
 
 	@Autowired
-	private YouTunesDAO postgresDb;
+	private CustomerRepository postgresDb;
 	public static void main(String[] args) {
 		SpringApplication.run(YouTunesApplication.class, args);
 	}
@@ -20,7 +21,7 @@ public class YouTunesApplication implements ApplicationRunner{
 	@Override
 	public void run(ApplicationArguments args) throws Exception {
 		// TODO Auto-generated method stub
-		postgresDb.test();
+
 	}
 
 }
