@@ -26,7 +26,7 @@ public class YouTunesApplication implements ApplicationRunner{
 	public void run(ApplicationArguments args) throws Exception {
 		// TODO Auto-generated method stub
 		System.out.println(postgresDb.getCountryWithMosyCustomers());
-		
+		System.out.println(postgresDb.getMostPopularGenre());
 	}
 
 }
