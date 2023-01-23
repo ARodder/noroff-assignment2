@@ -36,13 +36,26 @@ public class CustomerRepository implements CrudRepository<Integer, Customer> {
         return null;
     }
 
+    /**
+     * This method retrieves all customers found in the customer table
+     * @return List of all customers formatted as a Customer record data object
+     *         returns List of size 0 if no customers present in customer table
+     */
     @Override
     public List<Customer> getAll() {
         List<Customer> customers = new ArrayList<>();
+
+        // Initialize SQL statement, no where clause present as all customers are to be retrieved
         String sql = "SELECT * FROM customer";
+
+        // Connection to database
         try(Connection conn = DriverManager.getConnection(url, username, password)){
+
             PreparedStatement statement = conn.prepareStatement(sql);
             ResultSet resultSet = statement.executeQuery();
+
+            // Looping through retrieved customers, if any, and building a
+            // record object Customer based on parameters from result
             while(resultSet.next()){
                 Customer customer = new Customer(
                         resultSet.getInt("customer_id"),
