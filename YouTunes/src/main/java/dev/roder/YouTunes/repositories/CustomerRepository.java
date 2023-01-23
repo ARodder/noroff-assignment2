@@ -112,10 +112,43 @@ public class CustomerRepository implements CrudRepository<Integer, Customer> {
         return customers;
     }
 
+    /**
+     * This method creates a new entry of a customer in the customer table
+     * @param object Customer record data object representing a customer
+     *               that is to be added into the database as a new entry
+     */
     @Override
     public void create(Customer object) {
-        // TODO Auto-generated method stub
 
+        // Initializing the SQL statement. We make use of several '?'
+        // to denote all the values that we will supply the statement with
+        // a prepared statement and setting each value
+        String sql = "INSERT INTO " +
+                "customer(first_name, last_name, country, postal_code, phone, email)" +
+                "VALUES(?, ?, ?, ?, ?, ?)";
+
+        // Connection to database
+        try (Connection conn = DriverManager.getConnection(url, username, password)){
+
+            PreparedStatement statement = conn.prepareStatement(sql);
+
+            // We set each ? in the SQL statement with appropriate values in
+            // the supplied object of type Customer record
+            statement.setString(1, object.firstName());
+            statement.setString(2, object.lastName());
+            statement.setString(3, object.country());
+            statement.setString(4, object.postalCode());
+            statement.setString(5, object.phone());
+            statement.setString(6, object.email());
+
+            // This is a DML statement which does not return any ResultSet
+            // object but instead returns an integer representing how many rows were affected
+            int result = statement.executeUpdate();
+            System.out.println(result);
+
+        } catch (SQLException e){
+            e.printStackTrace();
+        }
     }
 
     @Override
