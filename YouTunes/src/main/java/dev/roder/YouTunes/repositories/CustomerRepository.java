@@ -114,8 +114,11 @@ public class CustomerRepository implements CrudRepository<Integer, Customer> {
 
     /**
      * This method creates a new entry of a customer in the customer table
+     * This is a DML statement which does not return a ResultSet, but instead
+     * it prints the number of rows affected which indicates whether
+     * the query was successful in completing its manipulation or not.
      * @param object Customer record data object representing a customer
-     *               that is to be added into the database as a new entry
+     *               that is to be added into the database as a new entry.
      */
     @Override
     public void create(Customer object) {
@@ -144,16 +147,58 @@ public class CustomerRepository implements CrudRepository<Integer, Customer> {
             // This is a DML statement which does not return any ResultSet
             // object but instead returns an integer representing how many rows were affected
             int result = statement.executeUpdate();
-            System.out.println(result);
+            System.out.println("Rows affected: " + result);
 
         } catch (SQLException e){
             e.printStackTrace();
         }
     }
 
+    /**
+     * This method updates an existing customer entry in the customer table
+     * with new data supplied in the form of a Customer record data object
+     * This is a DML statement which does not return a ResultSet, but instead
+     * it prints the number of rows affected which indicates whether
+     * the query was successful in completing its manipulation or not.
+     * @param object Customer record data object containing the values of
+     *               the parameters that are to be updated in the database.
+     */
     @Override
     public void update(Customer object) {
-        // TODO Auto-generated method stub
+
+        // Initializing SQL statement with all parameters that are to be updated
+        // and using '?' where values are to inputted via the prepared statement
+        // Customer_id is used together with the WHERE clause to specify which customer entry to update
+        String sql = "UPDATE customer SET " +
+                "first_name = ?, last_name = ?, country = ?, postal_code = ?, phone = ?, email = ? " +
+                "WHERE customer_id = ?";
+
+        // Connection to database
+        try (Connection conn = DriverManager.getConnection(url, username, password)){
+
+            PreparedStatement statement = conn.prepareStatement(sql);
+
+            // Setting the values of parameters that are to be updated
+            statement.setString(1, object.firstName());
+            statement.setString(2, object.lastName());
+            statement.setString(3, object.country());
+            statement.setString(4, object.postalCode());
+            statement.setString(5, object.phone());
+            statement.setString(6, object.email());
+
+            // Setting the customer_id which will specify which table entry to update
+            statement.setInt(7, object.customerId());
+
+            System.out.println(statement.toString());
+
+            // This is a DML statement which does not return any ResultSet
+            // object but instead returns an integer representing how many rows were affected
+            int result = statement.executeUpdate();
+            System.out.println("Rows affected: " + result);
+
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
 
     }
 
