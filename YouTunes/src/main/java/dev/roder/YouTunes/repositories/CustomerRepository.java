@@ -8,6 +8,7 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.List;
 
+import dev.roder.YouTunes.models.CustomerSpender;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Repository;
 
@@ -402,6 +403,43 @@ public class CustomerRepository implements CrudRepository<Integer, Customer> {
             System.out.println(e.getMessage());
         }
         return genre;
+    }
+
+    /**
+     * This method locates the highest spending customer
+     * by summing all spending of customers found by their invoices
+     * in the invoice table
+     * @return CustomerSpender record data object that contains
+     *         the total sum spent by the highest spending customer
+     *         and the id associated with this customer to identify him/her
+     */
+    public CustomerSpender getHighestSpendingCustomer(){
+        CustomerSpender highestSpender = null;
+
+        // Initializing SQL statement. The statement groups all entries in the invoice
+        // table by customer_id and then sums all the values of the total column in order
+        // to find the customer_id that is associated with the highest total spending
+        // It sorts the list in descending order and then limits it to 1 entry to automatically
+        // select the single customer.
+        String sql = "SELECT customer_id, SUM(total) as sum_total FROM invoice GROUP BY customer_id ORDER BY sum_total DESC LIMIT 1";
+
+        // Connection to database
+        try (Connection conn = DriverManager.getConnection(url, username, password)){
+
+            PreparedStatement statement = conn.prepareStatement(sql);
+            ResultSet resultSet = statement.executeQuery();
+
+            while(resultSet.next()){
+                highestSpender = new CustomerSpender(
+                        resultSet.getInt("customer_id"),
+                        resultSet.getDouble("sum_total")
+                );
+            }
+
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return highestSpender;
     }
 
 }
