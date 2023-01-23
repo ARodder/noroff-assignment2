@@ -1,12 +1,15 @@
 package dev.roder.YouTunes;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.ApplicationArguments;
 import org.springframework.boot.ApplicationRunner;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 
-import dev.roder.YouTunes.access.YouTunesDAO;
+import dev.roder.YouTunes.models.Customer;
 import dev.roder.YouTunes.repositories.CustomerRepository;
 
 @SpringBootApplication
@@ -21,7 +24,10 @@ public class YouTunesApplication implements ApplicationRunner{
 	@Override
 	public void run(ApplicationArguments args) throws Exception {
 		// TODO Auto-generated method stub
-
+		List<Customer> customerPage = postgresDb.getCustomerPage(10,10);
+		for(Customer customer:customerPage){
+			System.out.println(customer);
+		}
 	}
 
 }
