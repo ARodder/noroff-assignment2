@@ -6,7 +6,6 @@ import org.springframework.boot.ApplicationRunner;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 
-import dev.roder.YouTunes.access.YouTunesDAO;
 import dev.roder.YouTunes.repositories.CustomerRepository;
 
 @SpringBootApplication

@@ -29,11 +29,49 @@ public class CustomerRepository implements CrudRepository<Integer, Customer> {
         this.password = password;
     }
 
-
+    /**
+     *
+     * @param id Integer corresponding to the customer_id in the customer table
+     *           that one wants to find the corresponding table entry for.
+     * @return Returns a Customer record data object of the retrieved entry
+     *         in the customer table corresponding to the provided customer id
+     *         Can return null if no such table entry is found
+     */
     @Override
     public Customer getById(Integer id) {
-        // TODO Auto-generated method stub
-        return null;
+        Customer customer = null;
+
+        // Initializing SQL statement, using WHERE clause to find specific customer by id
+        // and ?-syntax for creating a parameterized statement where Integer id can be inputted
+        String sql = "SELECT * FROM customer WHERE customer_id = ?";
+
+        // Connection to database
+        try (Connection conn = DriverManager.getConnection(url, username, password)){
+
+            PreparedStatement statement = conn.prepareStatement(sql);
+
+            // We set our predefined variable denoted by ?
+            statement.setInt(1, id);
+
+            ResultSet resultSet = statement.executeQuery();
+
+            // Even though we only expect one returned entry
+            // we loop through in case the query returns null
+            while(resultSet.next()){
+                customer = new Customer(
+                        resultSet.getInt("customer_id"),
+                        resultSet.getString("first_name"),
+                        resultSet.getString("last_name"),
+                        resultSet.getString("country"),
+                        resultSet.getString("postal_code"),
+                        resultSet.getString("phone"),
+                        resultSet.getString("email")
+                );
+            }
+        }catch (SQLException e){
+            e.printStackTrace();
+        }
+        return customer;
     }
 
     /**
@@ -45,7 +83,7 @@ public class CustomerRepository implements CrudRepository<Integer, Customer> {
     public List<Customer> getAll() {
         List<Customer> customers = new ArrayList<>();
 
-        // Initialize SQL statement, no where clause present as all customers are to be retrieved
+        // Initializing SQL statement, no WHERE clause present as all customers are to be retrieved
         String sql = "SELECT * FROM customer";
 
         // Connection to database
