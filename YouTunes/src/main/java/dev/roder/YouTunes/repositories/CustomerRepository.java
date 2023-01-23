@@ -1,11 +1,11 @@
 package dev.roder.YouTunes.repositories;
 
+import java.util.ArrayList;
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.util.ArrayList;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Value;
@@ -29,6 +29,7 @@ public class CustomerRepository implements CrudRepository<Integer, Customer> {
         this.password = password;
     }
 
+
     @Override
     public Customer getById(Integer id) {
         // TODO Auto-generated method stub
@@ -37,8 +38,27 @@ public class CustomerRepository implements CrudRepository<Integer, Customer> {
 
     @Override
     public List<Customer> getAll() {
-        // TODO Auto-generated method stub
-        return null;
+        List<Customer> customers = new ArrayList<>();
+        String sql = "SELECT * FROM customer";
+        try(Connection conn = DriverManager.getConnection(url, username, password)){
+            PreparedStatement statement = conn.prepareStatement(sql);
+            ResultSet resultSet = statement.executeQuery();
+            while(resultSet.next()){
+                Customer customer = new Customer(
+                        resultSet.getInt("customer_id"),
+                        resultSet.getString("first_name"),
+                        resultSet.getString("last_name"),
+                        resultSet.getString("country"),
+                        resultSet.getString("postal_code"),
+                        resultSet.getString("phone"),
+                        resultSet.getString("email")
+                );
+                customers.add(customer);
+            }
+        }catch (SQLException e){
+            e.printStackTrace();
+        }
+        return customers;
     }
 
     @Override
