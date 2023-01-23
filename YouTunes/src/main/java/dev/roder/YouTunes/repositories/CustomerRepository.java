@@ -125,8 +125,6 @@ public class CustomerRepository implements CrudRepository<Integer, Customer> {
                         result.getInt("customer_id"),
                         result.getString("first_name"),
                         result.getString("last_name"),
-                        result.getString("address"),
-                        result.getString("city"),
                         result.getString("country"),
                         result.getString("postal_code"),
                         result.getString("phone"),
