@@ -12,6 +12,7 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Repository;
 
 import dev.roder.YouTunes.models.Customer;
+import dev.roder.YouTunes.models.CustomerCountry;
 
 @Repository
 public class CustomerRepository implements CrudRepository<Integer, Customer> {
@@ -29,7 +30,6 @@ public class CustomerRepository implements CrudRepository<Integer, Customer> {
         this.password = password;
     }
 
-
     @Override
     public Customer getById(Integer id) {
         // TODO Auto-generated method stub
@@ -40,10 +40,10 @@ public class CustomerRepository implements CrudRepository<Integer, Customer> {
     public List<Customer> getAll() {
         List<Customer> customers = new ArrayList<>();
         String sql = "SELECT * FROM customer";
-        try(Connection conn = DriverManager.getConnection(url, username, password)){
+        try (Connection conn = DriverManager.getConnection(url, username, password)) {
             PreparedStatement statement = conn.prepareStatement(sql);
             ResultSet resultSet = statement.executeQuery();
-            while(resultSet.next()){
+            while (resultSet.next()) {
                 Customer customer = new Customer(
                         resultSet.getInt("customer_id"),
                         resultSet.getString("first_name"),
@@ -51,11 +51,10 @@ public class CustomerRepository implements CrudRepository<Integer, Customer> {
                         resultSet.getString("country"),
                         resultSet.getString("postal_code"),
                         resultSet.getString("phone"),
-                        resultSet.getString("email")
-                );
+                        resultSet.getString("email"));
                 customers.add(customer);
             }
-        }catch (SQLException e){
+        } catch (SQLException e) {
             e.printStackTrace();
         }
         return customers;
@@ -173,6 +172,38 @@ public class CustomerRepository implements CrudRepository<Integer, Customer> {
         }
 
         return customerPage;
+    }
+
+    /**
+     * 
+     * This method retrieves the country with the most customers.
+     * 
+     * @return A CustomerCountry object containing the country name and the number
+     *         of customers from that country.
+     */
+    public CustomerCountry getCountryWithMosyCustomers() {
+        // Builds query by counting the occurences of each country, ordering them in
+        // descending order, and retrieving only the top one
+        // with the highest count.
+        String sql = "SELECT country, count(country) as amount FROM customer GROUP BY country ORDER BY amount DESC LIMIT 1";
+        CustomerCountry country = null;
+
+        // Connecting to the database
+        try (Connection conn = DriverManager.getConnection(url, username, password)) {
+            PreparedStatement statement = conn.prepareStatement(sql);
+            ResultSet result = statement.executeQuery();
+
+            // using if since there will only be one result.
+            if (result.next()) {
+                country = new CustomerCountry(result.getString("country"), result.getInt("amount"));
+            }
+
+            // close the database connection
+            conn.close();
+        } catch (SQLException e) {
+            System.out.println(e.getMessage());
+        }
+        return country;
     }
 
 }

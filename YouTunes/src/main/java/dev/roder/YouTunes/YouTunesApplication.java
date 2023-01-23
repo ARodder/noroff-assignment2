@@ -10,6 +10,7 @@ import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 
 import dev.roder.YouTunes.models.Customer;
+import dev.roder.YouTunes.models.CustomerCountry;
 import dev.roder.YouTunes.repositories.CustomerRepository;
 
 @SpringBootApplication
@@ -24,10 +25,8 @@ public class YouTunesApplication implements ApplicationRunner{
 	@Override
 	public void run(ApplicationArguments args) throws Exception {
 		// TODO Auto-generated method stub
-		List<Customer> customerPage = postgresDb.getCustomerPage(10,10);
-		for(Customer customer:customerPage){
-			System.out.println(customer);
-		}
+		System.out.println(postgresDb.getCountryWithMosyCustomers());
+		
 	}
 
 }
