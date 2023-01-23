@@ -14,10 +14,11 @@ import dev.roder.YouTunes.models.CustomerCountry;
 import dev.roder.YouTunes.repositories.CustomerRepository;
 
 @SpringBootApplication
-public class YouTunesApplication implements ApplicationRunner{
+public class YouTunesApplication implements ApplicationRunner {
 
 	@Autowired
 	private CustomerRepository postgresDb;
+
 	public static void main(String[] args) {
 		SpringApplication.run(YouTunesApplication.class, args);
 	}

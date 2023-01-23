@@ -15,6 +15,11 @@ import dev.roder.YouTunes.models.Customer;
 import dev.roder.YouTunes.models.CustomerCountry;
 import dev.roder.YouTunes.models.CustomerGenre;
 
+/**
+ * Creates a repository for the customer table
+ * serves as an interface between the application and the database
+ * and gives the software the possibility to interact with the user data.
+ */
 @Repository
 public class CustomerRepository implements CrudRepository<Integer, Customer> {
 
@@ -22,6 +27,15 @@ public class CustomerRepository implements CrudRepository<Integer, Customer> {
     private final String username;
     private final String password;
 
+    /**
+     * Creates an instance of the Customer repository by injecting
+     * the values of the url, username and password from the
+     * application.properties-file
+     * 
+     * @param url      url address of the sql database.
+     * @param username username to access the database.
+     * @param password password to access the database.
+     */
     public CustomerRepository(
             @Value("${spring.datasource.url}") String url,
             @Value("${spring.datasource.username}") String username,
@@ -121,6 +135,7 @@ public class CustomerRepository implements CrudRepository<Integer, Customer> {
      * This is a DML statement which does not return a ResultSet, but instead
      * it prints the number of rows affected which indicates whether
      * the query was successful in completing its manipulation or not.
+     * 
      * @param object Customer record data object representing a customer
      *               that is to be added into the database as a new entry.
      */
@@ -165,6 +180,7 @@ public class CustomerRepository implements CrudRepository<Integer, Customer> {
      * This is a DML statement which does not return a ResultSet, but instead
      * it prints the number of rows affected which indicates whether
      * the query was successful in completing its manipulation or not.
+     * 
      * @param object Customer record data object containing the values of
      *               the parameters that are to be updated in the database.
      */
@@ -173,13 +189,14 @@ public class CustomerRepository implements CrudRepository<Integer, Customer> {
 
         // Initializing SQL statement with all parameters that are to be updated
         // and using '?' where values are to inputted via the prepared statement
-        // Customer_id is used together with the WHERE clause to specify which customer entry to update
+        // Customer_id is used together with the WHERE clause to specify which customer
+        // entry to update
         String sql = "UPDATE customer SET " +
                 "first_name = ?, last_name = ?, country = ?, postal_code = ?, phone = ?, email = ? " +
                 "WHERE customer_id = ?";
 
         // Connection to database
-        try (Connection conn = DriverManager.getConnection(url, username, password)){
+        try (Connection conn = DriverManager.getConnection(url, username, password)) {
 
             PreparedStatement statement = conn.prepareStatement(sql);
 
@@ -197,7 +214,8 @@ public class CustomerRepository implements CrudRepository<Integer, Customer> {
             System.out.println(statement.toString());
 
             // This is a DML statement which does not return any ResultSet
-            // object but instead returns an integer representing how many rows were affected
+            // object but instead returns an integer representing how many rows were
+            // affected
             int result = statement.executeUpdate();
             System.out.println("Rows affected: " + result);
 
