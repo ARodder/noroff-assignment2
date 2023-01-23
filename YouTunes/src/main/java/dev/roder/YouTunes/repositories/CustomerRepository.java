@@ -29,28 +29,6 @@ public class CustomerRepository implements CrudRepository<Integer, Customer> {
         this.password = password;
     }
 
-    private final String url;
-
-    private final String username;
-
-    private final String password;
-
-
-    public CustomerRepository(
-
-            @Value("${spring.datasource.url}") String url,
-
-            @Value("${spring.datasource.username}") String username,
-
-            @Value("${spring.datasource.password}") String password){
-
-        this.url = url;
-
-        this.username = username;
-
-        this.password = password;
-
-    }
 
     @Override
     public Customer getById(Integer id) {
