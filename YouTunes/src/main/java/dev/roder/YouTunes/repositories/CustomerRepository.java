@@ -13,6 +13,7 @@ import org.springframework.stereotype.Repository;
 
 import dev.roder.YouTunes.models.Customer;
 import dev.roder.YouTunes.models.CustomerCountry;
+import dev.roder.YouTunes.models.CustomerGenre;
 
 @Repository
 public class CustomerRepository implements CrudRepository<Integer, Customer> {
@@ -42,12 +43,14 @@ public class CustomerRepository implements CrudRepository<Integer, Customer> {
     public Customer getById(Integer id) {
         Customer customer = null;
 
-        // Initializing SQL statement, using WHERE clause to find specific customer by id
-        // and ?-syntax for creating a parameterized statement where Integer id can be inputted
+        // Initializing SQL statement, using WHERE clause to find specific customer by
+        // id
+        // and ?-syntax for creating a parameterized statement where Integer id can be
+        // inputted
         String sql = "SELECT * FROM customer WHERE customer_id = ?";
 
         // Connection to database
-        try (Connection conn = DriverManager.getConnection(url, username, password)){
+        try (Connection conn = DriverManager.getConnection(url, username, password)) {
 
             PreparedStatement statement = conn.prepareStatement(sql);
 
@@ -58,7 +61,7 @@ public class CustomerRepository implements CrudRepository<Integer, Customer> {
 
             // Even though we only expect one returned entry
             // we loop through in case the query returns null
-            while(resultSet.next()){
+            while (resultSet.next()) {
                 customer = new Customer(
                         resultSet.getInt("customer_id"),
                         resultSet.getString("first_name"),
@@ -66,10 +69,9 @@ public class CustomerRepository implements CrudRepository<Integer, Customer> {
                         resultSet.getString("country"),
                         resultSet.getString("postal_code"),
                         resultSet.getString("phone"),
-                        resultSet.getString("email")
-                );
+                        resultSet.getString("email"));
             }
-        }catch (SQLException e){
+        } catch (SQLException e) {
             e.printStackTrace();
         }
         return customer;
@@ -77,6 +79,7 @@ public class CustomerRepository implements CrudRepository<Integer, Customer> {
 
     /**
      * This method retrieves all customers found in the customer table
+     * 
      * @return List of all customers formatted as a Customer record data object
      *         returns List of size 0 if no customers present in customer table
      */
@@ -84,18 +87,19 @@ public class CustomerRepository implements CrudRepository<Integer, Customer> {
     public List<Customer> getAll() {
         List<Customer> customers = new ArrayList<>();
 
-        // Initializing SQL statement, no WHERE clause present as all customers are to be retrieved
+        // Initializing SQL statement, no WHERE clause present as all customers are to
+        // be retrieved
         String sql = "SELECT * FROM customer";
 
         // Connection to database
-        try(Connection conn = DriverManager.getConnection(url, username, password)){
+        try (Connection conn = DriverManager.getConnection(url, username, password)) {
 
             PreparedStatement statement = conn.prepareStatement(sql);
             ResultSet resultSet = statement.executeQuery();
 
             // Looping through retrieved customers, if any, and building a
             // record object Customer based on parameters from result
-            while(resultSet.next()){
+            while (resultSet.next()) {
                 Customer customer = new Customer(
                         resultSet.getInt("customer_id"),
                         resultSet.getString("first_name"),
@@ -114,6 +118,7 @@ public class CustomerRepository implements CrudRepository<Integer, Customer> {
 
     /**
      * This method creates a new entry of a customer in the customer table
+     * 
      * @param object Customer record data object representing a customer
      *               that is to be added into the database as a new entry
      */
@@ -128,7 +133,7 @@ public class CustomerRepository implements CrudRepository<Integer, Customer> {
                 "VALUES(?, ?, ?, ?, ?, ?)";
 
         // Connection to database
-        try (Connection conn = DriverManager.getConnection(url, username, password)){
+        try (Connection conn = DriverManager.getConnection(url, username, password)) {
 
             PreparedStatement statement = conn.prepareStatement(sql);
 
@@ -142,11 +147,12 @@ public class CustomerRepository implements CrudRepository<Integer, Customer> {
             statement.setString(6, object.email());
 
             // This is a DML statement which does not return any ResultSet
-            // object but instead returns an integer representing how many rows were affected
+            // object but instead returns an integer representing how many rows were
+            // affected
             int result = statement.executeUpdate();
             System.out.println(result);
 
-        } catch (SQLException e){
+        } catch (SQLException e) {
             e.printStackTrace();
         }
     }
@@ -289,6 +295,51 @@ public class CustomerRepository implements CrudRepository<Integer, Customer> {
             System.out.println(e.getMessage());
         }
         return country;
+    }
+
+    /**
+     * 
+     * This method retrieves the most popular genre among customers by querying the
+     * database.
+     * The query uses an inner join on the invoice_line, track, and genre tables to
+     * retrieve the name of the genre
+     * and the total amount of sales in that genre. The sum of the quantity in the
+     * invoice_line table is used
+     * to add up the amount of sales in each line instead of just counting the
+     * invoice lines.
+     * The results are then ordered by the amount of sales and the top result is
+     * returned.
+     * 
+     * @return a CustomerGenre object representing the most popular genre and the
+     *         total amount of sales in that genre.
+     */
+    public CustomerGenre getMostPopularGenre() {
+        // Builds query to select genre and total amount of sales in the genre
+        // uses sum on invoice_line.quantity to add up the amount sales in each
+        // line instead of just counting invoice line.
+        // uses inner join on track and genre to retrieve the name of each genre.
+        String sql = "SELECT genre.name as genreName, sum(invoice_line.quantity) as amount FROM invoice_line" +
+                " INNER JOIN track on track.track_id = invoice_line.track_id" +
+                " INNER JOIN genre on track.genre_id = genre.genre_id" +
+                " GROUP BY genre.name" +
+                " ORDER BY amount DESC LIMIT 1";
+        CustomerGenre genre = null;
+
+        // Connecting to the database
+        try (Connection conn = DriverManager.getConnection(url, username, password)) {
+            PreparedStatement statement = conn.prepareStatement(sql);
+            ResultSet result = statement.executeQuery();
+            // using if since there will only be one result.
+            if (result.next()) {
+                genre = new CustomerGenre(result.getString("genreName"), result.getInt("amount"));
+            }
+
+            // close the database connection
+            conn.close();
+        } catch (SQLException e) {
+            System.out.println(e.getMessage());
+        }
+        return genre;
     }
 
 }
