@@ -335,7 +335,7 @@ public class CustomerRepository implements CrudRepository<Integer, Customer> {
      * @return A CustomerCountry object containing the country name and the number
      *         of customers from that country.
      */
-    public CustomerCountry getCountryWithMosyCustomers() {
+    public CustomerCountry getCountryWithMostCustomers() {
         // Builds query by counting the occurences of each country, ordering them in
         // descending order, and retrieving only the top one
         // with the highest count.
