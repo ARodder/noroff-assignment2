@@ -14,7 +14,7 @@ import dev.roder.YouTunes.models.CustomerCountry;
 import dev.roder.YouTunes.repositories.CustomerRepository;
 
 @SpringBootApplication
-public class YouTunesApplication implements ApplicationRunner {
+public class YouTunesApplication {
 
 	@Autowired
 	private CustomerRepository postgresDb;
@@ -22,12 +22,4 @@ public class YouTunesApplication implements ApplicationRunner {
 	public static void main(String[] args) {
 		SpringApplication.run(YouTunesApplication.class, args);
 	}
-
-	@Override
-	public void run(ApplicationArguments args) throws Exception {
-		// TODO Auto-generated method stub
-		System.out.println(postgresDb.getCountryWithMosyCustomers());
-		System.out.println(postgresDb.getMostPopularGenre());
-	}
-
 }
