@@ -242,13 +242,13 @@ public class CustomerRepository implements CrudRepository<Integer, Customer> {
      * @return A customer object with all the details of the customer, or null if no
      *         customer is found
      */
-    public Customer getByName(String name) {
+    public List<Customer> getByName(String name) {
         // Building the query with like to retrieve customers with similar name if f.eks
         // a letter is missing in the input.
-        String sql = "SELECT * FROM customer WHERE first_name LIKE ? AND last_name LIKE ?";
+        String sql = "SELECT * FROM customer WHERE first_name LIKE ? OR last_name LIKE ?";
         // Splitting the name based on spaces
         String[] names = name.split(" ");
-        Customer customer = null;
+        List<Customer> customer = new ArrayList<>();
 
         // Connecting to the database
         try (Connection conn = DriverManager.getConnection(url, username, password)) {
@@ -264,15 +264,15 @@ public class CustomerRepository implements CrudRepository<Integer, Customer> {
             ResultSet result = statement.executeQuery();
 
             // If a result was found take that result and build a customer object.
-            if (result.next()) {
-                customer = new Customer(
+            while(result.next()) {
+                customer.add(new Customer(
                         result.getInt("customer_id"),
                         result.getString("first_name"),
                         result.getString("last_name"),
                         result.getString("country"),
                         result.getString("postal_code"),
                         result.getString("phone"),
-                        result.getString("email"));
+                        result.getString("email")));
             }
 
             // close the database connection

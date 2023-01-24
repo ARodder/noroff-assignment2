@@ -19,29 +19,36 @@ public class CustomerQueryRunner implements ApplicationRunner {
         // Run getAll by printing the size of the array.
         int customerAmnt = repo.getAll().size();
         System.out.println(customerAmnt);
-
+        System.out.println();
         // Run create new customer and getById by creating and adding a new customer,
         // then trying to read the customer with the id of the newly added customer
         Customer newCustomer = new Customer(customerAmnt + 1, "Aleksander", "Roder", "Norway", "7014", "99347308",
                 "example@epost.no");
         repo.create(newCustomer);
         System.out.println(repo.getById(customerAmnt + 1));
-
+        System.out.println();
         //Run the update customer method by modifying the previously made customer with a new last name
         Customer updatedCustomer = new Customer(newCustomer.customerId(), newCustomer.firstName(), "fylling",
                 newCustomer.country(), newCustomer.postalCode(), newCustomer.phone(), newCustomer.email());
         repo.update(updatedCustomer);
         System.out.println(repo.getById(customerAmnt + 1));
-
+        System.out.println();
         //Run the getCustomerPage by retrieving a page of Customers and printing them.
         for (Customer customer : repo.getCustomerPage(10, 10)) {
             System.out.println(customer);
         }
-
+        System.out.println();
+        //Run the getByName and print all results
+        for(Customer customer: repo.getByName("Alex")){
+            System.out.println(customer);
+        }
+        System.out.println();
         //Running the getCountryWithMostCustomers by printing the result.
         System.out.println(repo.getCountryWithMostCustomers());
+        System.out.println();
         //Running the getMostPopularGenre by printing the result.
         System.out.println(repo.getMostPopularGenre(5));
+        System.out.println();
         //Running the getHighestSpendingCustomer by printing the result.
         System.out.println(repo.getHighestSpendingCustomer());
     }
