@@ -376,7 +376,7 @@ public class CustomerRepository implements CrudRepository<Integer, Customer> {
      * @return a CustomerGenre object representing the most popular genre and the
      *         total amount of sales in that genre.
      */
-    public CustomerGenre getMostPopularGenre() {
+    public CustomerGenre getMostPopularGenre(int customerId) {
         // Builds query to select genre and total amount of sales in the genre
         // uses sum on invoice_line.quantity to add up the amount sales in each
         // line instead of just counting invoice line.
@@ -384,6 +384,8 @@ public class CustomerRepository implements CrudRepository<Integer, Customer> {
         String sql = "SELECT genre.name as genreName, sum(invoice_line.quantity) as amount FROM invoice_line" +
                 " INNER JOIN track on track.track_id = invoice_line.track_id" +
                 " INNER JOIN genre on track.genre_id = genre.genre_id" +
+                " INNER JOIN invoice ON invoice.invoice_id = invoice_line.invoice_id"+
+                " WHERE invoice.customer_id = ?"+
                 " GROUP BY genre.name" +
                 " ORDER BY amount DESC LIMIT 1";
         CustomerGenre genre = null;
@@ -391,6 +393,7 @@ public class CustomerRepository implements CrudRepository<Integer, Customer> {
         // Connecting to the database
         try (Connection conn = DriverManager.getConnection(url, username, password)) {
             PreparedStatement statement = conn.prepareStatement(sql);
+            statement.setInt(1, customerId);
             ResultSet result = statement.executeQuery();
             // using if since there will only be one result.
             if (result.next()) {
