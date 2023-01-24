@@ -41,7 +41,7 @@ public class CustomerQueryRunner implements ApplicationRunner {
         //Running the getCountryWithMostCustomers by printing the result.
         System.out.println(repo.getCountryWithMostCustomers());
         //Running the getMostPopularGenre by printing the result.
-        System.out.println(repo.getMostPopularGenre());
+        System.out.println(repo.getMostPopularGenre(5));
         //Running the getHighestSpendingCustomer by printing the result.
         System.out.println(repo.getHighestSpendingCustomer());
     }
